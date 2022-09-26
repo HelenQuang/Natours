@@ -1,10 +1,86 @@
+const fs = require("fs");
 const express = require("express");
 
 const app = express();
 
-app.get("/", (req, res) => {
-  res.status(200).json({ message: "Hello from the server side!" });
-});
+app.use(express.json());
+
+const tours = JSON.parse(
+  fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
+);
+
+//Get All Tours
+const getAllTours = (req, res) => {
+  res.status(200).json({
+    status: "success",
+    results: tours.length,
+    data: { tours },
+  });
+};
+
+//Get Specific Tour
+const getSpecificTour = (req, res) => {
+  const tour = tours.find((el) => el.id === +req.params.id);
+
+  if (!tour) {
+    return res.status(404).json({ status: "fail", message: "Invalid ID" });
+  }
+
+  res.status(200).json({
+    status: "success",
+    data: { tour },
+  });
+};
+
+//Create New Tour
+const createNewTour = (req, res) => {
+  const newId = tours[tours.length - 1].id + 1;
+  const newTour = Object.assign({ id: newId }, req.body);
+
+  tours.push(newTour);
+
+  fs.writeFile(
+    `${__dirname}/dev-data/data/tours-simple.json`,
+    JSON.stringify(tours),
+    (err) => {
+      res.status(201).json({
+        status: "success",
+        data: { tour: newTour },
+      });
+    }
+  );
+};
+
+//Update Tour
+const updateTour = (req, res) => {
+  if (!req.params.id) {
+    return res.status(404).json({ status: "fail", message: "Invalid ID" });
+  }
+
+  res.status(200).json({
+    status: "success",
+    data: { tour: "Updated tour" },
+  });
+};
+
+//Delete Tour
+const deleteTour = (req, res) => {
+  if (!req.params.id) {
+    return res.status(404).json({ status: "fail", message: "Invalid ID" });
+  }
+
+  res.status(204).json({
+    status: "success",
+    data: null,
+  });
+};
+
+app.route("/api/v1/tours").get(getAllTours).post(createNewTour);
+app
+  .route("/api/v1/tours/:id")
+  .get(getSpecificTour)
+  .patch(updateTour)
+  .delete(deleteTour);
 
 const port = 3000;
 app.listen(port, () => {
