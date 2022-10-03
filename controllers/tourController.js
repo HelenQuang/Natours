@@ -19,12 +19,23 @@ const Tour = require("./../models/tourModel");
 //Get All Tours
 exports.getAllTours = async (req, res) => {
   try {
+    //////FILTER QUERY/////
     const { page, sort, limit, fields, ...queryObj } = req.query; //Only want the main query obj and ignore other four queries
 
     let queryStr = JSON.stringify(queryObj);
     queryStr = queryStr.replace(/\b(gte?|lte?)\b/g, (match) => `$${match}`); //Advance filter for greater than, greater than equal, less than, less than equal
 
-    const query = await Tour.find(JSON.parse(queryStr)); //Find all tour that match query
+    let query = Tour.find(JSON.parse(queryStr)); //Find all tour that match query
+
+    //////SORT QUERY//////
+    if (req.query.sort) {
+      const sortBy = req.query.sort.split(",").join(" ");
+      query = query.sort(sortBy);
+    } else {
+      query = query.sort("-createdAt");
+    }
+
+    //////EXECUTE QUERY////
     const tours = await query;
 
     res.status(200).json({
