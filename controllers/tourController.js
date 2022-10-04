@@ -1,50 +1,27 @@
 const Tour = require("./../models/tourModel");
+const APIFeatures = require("./../utils/apiFeatures");
 
 /////////////////////////////////////////////
-//GET FILE
-// const tours = JSON.parse(
-//   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
-// );
-
 //CREATE PARAM MIDDLEWARE:
-// exports.checkID = (req, res, next) => {
-//   if (+req.params.id < 0 || +req.params.id > tours.length) {
-//     return res.status(404).json({ status: "fail", message: "Invalid ID" });
-//   }
-//   next();
-// };
-////////////////////////////////////////////
+exports.aliasTopTours = (req, res, next) => {
+  req.query.limit = "5";
+  req.query.sort = "-ratingsAverage,price";
+  // req.query.fields = "name,price,ratingsAverage,summary,difficulty";
+  next();
+};
 
+////////////////////////////////////////////
 //ROUTE HANDLER
 //Get All Tours
 exports.getAllTours = async (req, res) => {
   try {
-    //////FILTER QUERY/////
-    const { page, sort, limit, fields, ...queryObj } = req.query; //Only want the main query obj and ignore other four queries
-
-    let queryStr = JSON.stringify(queryObj);
-    queryStr = queryStr.replace(/\b(gte?|lte?)\b/g, (match) => `$${match}`); //Advance filter for greater than, greater than equal, less than, less than equal
-
-    let query = Tour.find(JSON.parse(queryStr)); //Find all tour that match query
-
-    //////SORT QUERY//////
-    if (req.query.sort) {
-      const sortBy = req.query.sort.split(",").join(" ");
-      query = query.sort(sortBy);
-    } else {
-      query = query.sort("-createdAt");
-    }
-
-    /////FIELD LIMIT QUERY////
-    if (req.query.fields) {
-      const fields = req.query.fields.split(",").join(" ");
-      query = query.select(fields);
-    } else {
-      query = query.select("-__v"); //Exclude the __v field
-    }
-
     //////EXECUTE QUERY////
-    const tours = await query;
+    const features = new APIFeatures(Tour.find(), req.query)
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate();
+    const tours = await features.query;
 
     res.status(200).json({
       status: "success",
