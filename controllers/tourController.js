@@ -90,3 +90,80 @@ exports.deleteTour = async (req, res) => {
     res.status(404).json({ status: "fail", message: "Cannot delete" });
   }
 };
+
+//////////AGGREGATION PIPELINE
+exports.getTourStats = async (req, res) => {
+  try {
+    const stats = await Tour.aggregate([
+      {
+        $match: { ratingsAverage: { $gte: 4.5 } }, //Select docs that matches
+      },
+      {
+        $group: {
+          //_id: null, //Group all docs
+          _id: "$difficulty", //Group all docs based on difficulty
+          totalTours: { $sum: 1 }, //Each doc. goes through this pipeline add 1 to sum
+          totalRatings: { $sum: "$ratingsQuantity" },
+          avgRating: { $avg: "$ratingsAverage" },
+          avgPrice: { $avg: "$price" },
+          minPrice: { $min: "$price" },
+          maxPrice: { $max: "$price" },
+        },
+      },
+      { $sort: { avgPrice: 1 } }, //Sort avgPrice in ascending order
+    ]);
+
+    res.status(200).json({
+      status: "success",
+      data: { stats },
+    });
+  } catch (err) {
+    res.status(404).json({ status: "fail", message: "Cannot delete" });
+  }
+};
+
+exports.getMonthlyPlan = async (req, res) => {
+  try {
+    const year = +req.params.year;
+
+    const plan = await Tour.aggregate([
+      //unwind: deconstruct an array field from the docs $ output 1 doc for each el of the array
+      { $unwind: "$startDates" },
+      {
+        $match: {
+          startDates: {
+            $gte: new Date(`${year}-01-01`),
+            $lte: new Date(`${year}-12-31`),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: { $month: "$startDates" },
+          totalTours: { $sum: 1 },
+          tours: { $push: "$name" },
+        },
+      },
+      {
+        //Add new fields
+        $addFields: {
+          month: "$_id",
+        },
+      },
+      {
+        //Show or hide fields
+        $project: {
+          _id: 0,
+        },
+      },
+      { $sort: { totalTours: -1 } },
+    ]);
+
+    res.status(200).json({
+      status: "success",
+      data: { plan },
+    });
+  } catch (err) {
+    res.status(404).json({ status: "fail", message: "Cannot delete" });
+  }
+};
