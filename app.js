@@ -14,11 +14,6 @@ if (process.env.NODE_ENV === "development") {
 app.use(express.json());
 
 app.use((req, res, next) => {
-  console.log("Hello from middleware");
-  next();
-});
-
-app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
   next();
 });
@@ -26,5 +21,13 @@ app.use((req, res, next) => {
 //ROUTES
 app.use("/api/v1/tours", tourRouter);
 app.use("/api/v1/users", userRouter);
+
+app.all("*", (req, res, next) => {
+  //use all for all methods(get, post, delete,...)
+  res.status(404).json({
+    status: "fail",
+    message: `${req.originalUrl} cannot find in this server`,
+  });
+});
 
 module.exports = app;
