@@ -1,6 +1,8 @@
 const express = require("express");
 const morgan = require("morgan");
 
+const AppError = require("./utils/appError");
+const globalErrorHandler = require("./controllers/errorController");
 const tourRouter = require("./routes/tourRoutes");
 const userRouter = require("./routes/userRoutes");
 
@@ -24,10 +26,10 @@ app.use("/api/v1/users", userRouter);
 
 app.all("*", (req, res, next) => {
   //use all for all methods(get, post, delete,...)
-  res.status(404).json({
-    status: "fail",
-    message: `${req.originalUrl} cannot find in this server`,
-  });
+
+  next(new AppError(404, `${req.originalUrl} cannot find in this server`)); //pass anything into next => is assumed as an error & skip all other middlewares & send that error to the global handling error
 });
+
+app.use(globalErrorHandler);
 
 module.exports = app;
