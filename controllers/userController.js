@@ -1,3 +1,4 @@
+const User = require("../models/userModel");
 const fs = require("fs");
 
 //GET FILE
