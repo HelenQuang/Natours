@@ -21,6 +21,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please provide us your password"],
     minLength: 8,
+    select: false,
   },
   passwordConfirm: {
     type: String,
@@ -35,6 +36,7 @@ const userSchema = new mongoose.Schema({
   },
 });
 
+//bcrypt password and remove passwordConfirm bf saving to DB
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
     return next();
@@ -45,6 +47,14 @@ userSchema.pre("save", async function (next) {
   this.passwordConfirm = undefined; //Remove it before saving to DB
   next();
 });
+
+//Instance method: available on all documents of a certain collection
+userSchema.methods.comparePassword = async function (
+  inputPassword,
+  databasePassword
+) {
+  return await bcrypt.compare(inputPassword, databasePassword);
+};
 
 const User = mongoose.model("User", userSchema);
 module.exports = User;
