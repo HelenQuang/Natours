@@ -57,6 +57,14 @@ module.exports = (err, req, res, next) => {
       error = handleCastErrDB(error);
     }
 
+    if (error.name === "JsonWebTokenError") {
+      error = new AppError("Invalid token, please log in again!", 401);
+    }
+
+    if (error.name === "TokenExpiredError") {
+      error = new AppError("Token has been expired, please log in again!", 401);
+    }
+
     if (error.code === 11000) {
       error = handleDuplicateErrDB(error);
     }

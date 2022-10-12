@@ -1,46 +1,14 @@
 const User = require("../models/userModel");
-const fs = require("fs");
-
-//GET FILE
-const users = JSON.parse(
-  fs.readFileSync(`${__dirname}/../dev-data/data/users.json`)
-);
+const catchAsync = require("../utils/catchAsync");
 
 //ROUTE HANDLER
 //Get All Users
-exports.getAllUsers = (req, res) => {
+exports.getAllUsers = catchAsync(async (req, res, next) => {
+  const users = await User.find();
+
   res.status(200).json({
     status: "success",
-    requestedAt: req.requestTime,
     results: users.length,
     data: { users },
   });
-};
-
-//Create New User
-exports.createNewUser = (req, res) => {
-  res
-    .status(500)
-    .json({ status: "error", message: "This route is not defined" });
-};
-
-//Get Specific User
-exports.getSpecificUser = (req, res) => {
-  res
-    .status(500)
-    .json({ status: "error", message: "This route is not defined" });
-};
-
-//Update User
-exports.updateUser = (req, res) => {
-  res
-    .status(500)
-    .json({ status: "error", message: "This route is not defined" });
-};
-
-//Delete User
-exports.deleteUser = (req, res) => {
-  res
-    .status(500)
-    .json({ status: "error", message: "This route is not defined" });
-};
+});

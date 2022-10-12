@@ -34,6 +34,7 @@ const userSchema = new mongoose.Schema({
       message: "Passwords do not match",
     },
   },
+  passwordChangedAt: Date,
 });
 
 //bcrypt password and remove passwordConfirm bf saving to DB
@@ -49,11 +50,24 @@ userSchema.pre("save", async function (next) {
 });
 
 //Instance method: available on all documents of a certain collection
+//Instance method to check if the input password when log in is the same as the password in database
 userSchema.methods.comparePassword = async function (
   inputPassword,
   databasePassword
 ) {
   return await bcrypt.compare(inputPassword, databasePassword);
+};
+
+//Instance method to check if user has recently change password
+userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
+  if (this.passwordChangedAt) {
+    const changedTimestamp = parseInt(
+      this.passwordChangedAt.getTime() / 1000,
+      10
+    );
+    return JWTTimestamp < changedTimestamp; //return TRUE when the time that JWT issued < the time that change password
+  }
+  return false; //return FALSE when there is no change
 };
 
 const User = mongoose.model("User", userSchema);
