@@ -1,3 +1,4 @@
+const crypto = require("crypto");
 const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
@@ -17,6 +18,11 @@ const userSchema = new mongoose.Schema({
   photo: {
     type: String,
   },
+  role: {
+    type: String,
+    enum: ["user", "guide", "lead-guide", "admin"],
+    default: "user",
+  },
   password: {
     type: String,
     required: [true, "Please provide us your password"],
@@ -35,6 +41,8 @@ const userSchema = new mongoose.Schema({
     },
   },
   passwordChangedAt: Date,
+  passwordResetToken: String,
+  passwordResetExpires: Date,
 });
 
 //bcrypt password and remove passwordConfirm bf saving to DB
@@ -49,7 +57,9 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-//Instance method: available on all documents of a certain collection
+//////////////////////////////////////
+//INSTANCE METHOD: AVAILABLE ON ALL DOCS OF A CERTAIN COLLECTION
+
 //Instance method to check if the input password when log in is the same as the password in database
 userSchema.methods.comparePassword = async function (
   inputPassword,
@@ -68,6 +78,22 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
     return JWTTimestamp < changedTimestamp; //return TRUE when the time that JWT issued < the time that change password
   }
   return false; //return FALSE when there is no change
+};
+
+//Instance method to create new token when reset password
+userSchema.methods.createPasswordResetToken = function () {
+  const resetToken = crypto.randomBytes(32).toString("hex");
+
+  this.passwordResetToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  console.log({ resetToken }, this.passwordResetToken);
+
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000; //expires in 10mins
+
+  return resetToken;
 };
 
 const User = mongoose.model("User", userSchema);
