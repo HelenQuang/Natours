@@ -45,15 +45,27 @@ const userSchema = new mongoose.Schema({
   passwordResetExpires: Date,
 });
 
-//bcrypt password and remove passwordConfirm bf saving to DB
+/////////////////////////////////////////////
+//MIDDLEWARE to bcrypt password and remove passwordConfirm bf saving to DB
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
     return next();
   }
 
   this.password = await bcrypt.hash(this.password, 12);
-
   this.passwordConfirm = undefined; //Remove it before saving to DB
+
+  next();
+});
+
+//MIDDLEWARE to update passwordChangedAt property when password property is modified
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password") || this.isNew) {
+    return next();
+  }
+
+  this.passwordChangedAt = Date.now() - 1000;
+
   next();
 });
 
