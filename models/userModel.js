@@ -43,6 +43,7 @@ const userSchema = new mongoose.Schema({
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetExpires: Date,
+  active: { type: Boolean, default: true, select: false },
 });
 
 /////////////////////////////////////////////
@@ -66,6 +67,12 @@ userSchema.pre("save", async function (next) {
 
   this.passwordChangedAt = Date.now() - 1000;
 
+  next();
+});
+
+//MIDDLEWARE to find only docs that active property is not equal to false
+userSchema.pre(/^find/, async function (next) {
+  this.find({ active: { $ne: false } });
   next();
 });
 
