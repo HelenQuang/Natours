@@ -3,6 +3,7 @@ const {
   getAllUsers,
   updateMe,
   deleteMe,
+  deleteUser,
 } = require("./../controllers/userController");
 const {
   signUp,
@@ -23,5 +24,6 @@ router.route("/resetPassword/:token").patch(resetPassword);
 router.route("/updateMyPassword").patch(protect, updatePassword);
 router.route("/updateMe").patch(protect, updateMe);
 router.route("/deleteMe").delete(protect, deleteMe);
+router.route("/:id").delete(deleteUser);
 
 module.exports = router;
