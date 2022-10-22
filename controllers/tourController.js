@@ -49,31 +49,10 @@ exports.getSpecificTour = catchAsync(async (req, res, next) => {
 });
 
 //Create New Tour
-exports.createNewTour = catchAsync(async (req, res, next) => {
-  const newTour = await Tour.create(req.body);
-
-  res.status(201).json({
-    status: "success",
-    data: { tour: newTour },
-  });
-});
+exports.createNewTour = factory.createOne(Tour);
 
 //Update Tour
-exports.updateTour = catchAsync(async (req, res, next) => {
-  const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
-    new: true, //new updated document will be returned
-    runValidators: true, //when update document, validators in schema run again
-  });
-
-  if (!tour) {
-    return next(new AppError("Cannot find any tour with this ID", 404));
-  }
-
-  res.status(200).json({
-    status: "success",
-    data: { tour },
-  });
-});
+exports.updateTour = factory.updateOne(Tour);
 
 //Delete Tour
 exports.deleteTour = factory.deleteOne(Tour);
