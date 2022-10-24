@@ -27,6 +27,9 @@ exports.getAllUsers = catchAsync(async (req, res, next) => {
   });
 });
 
+//Get Specific User
+exports.getSpecificUser = factory.getSpecificOne(User);
+
 //Update User Data
 exports.updateMe = catchAsync(async (req, res, next) => {
   //1. Create error if user post password data
@@ -66,3 +69,11 @@ exports.deleteUser = factory.deleteOne(User);
 
 //Update user
 exports.updateUser = factory.updateOne(User);
+
+//Create user
+exports.createUser = (req, res) => {
+  res.status(500).json({
+    status: "error",
+    message: "This route is not defined! Please use /signup instead",
+  });
+};

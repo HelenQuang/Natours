@@ -25,6 +25,7 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
     .sort()
     .limitFields()
     .paginate();
+
   const tours = await features.query;
 
   res.status(200).json({
@@ -35,18 +36,7 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
 });
 
 //Get Specific Tour
-exports.getSpecificTour = catchAsync(async (req, res, next) => {
-  const tour = await Tour.findById(req.params.id).populate("reviews");
-
-  if (!tour) {
-    return next(new AppError("Cannot find any tour with this ID", 404));
-  }
-
-  res.status(200).json({
-    status: "success",
-    data: { tour },
-  });
-});
+exports.getSpecificTour = factory.getSpecificOne(Tour, { path: "reviews" });
 
 //Create New Tour
 exports.createNewTour = factory.createOne(Tour);

@@ -18,6 +18,9 @@ exports.getAllReviews = catchAsync(async (req, res, next) => {
   });
 });
 
+//Get Specific Review
+exports.getSpecificReview = factory.getSpecificOne(Review);
+
 //Create New Review
 exports.setTourAndUserId = (req, res, next) => {
   if (!req.body.tour) req.body.tour = req.params.tourId;
