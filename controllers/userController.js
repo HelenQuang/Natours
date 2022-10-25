@@ -16,19 +16,32 @@ const filterObj = (obj, ...allowedFields) => {
 };
 
 //ROUTE HANDLER
-//Get All Users
-exports.getAllUsers = catchAsync(async (req, res, next) => {
-  const users = await User.find();
 
-  res.status(200).json({
-    status: "success",
-    results: users.length,
-    data: { users },
-  });
-});
+//Get All Users
+exports.getAllUsers = factory.getAll(User);
 
 //Get Specific User
 exports.getSpecificUser = factory.getSpecificOne(User);
+
+//Delete user
+exports.deleteUser = factory.deleteOne(User);
+
+//Update user
+exports.updateUser = factory.updateOne(User);
+
+//Create user
+exports.createUser = (req, res) => {
+  res.status(500).json({
+    status: "error",
+    message: "This route is not defined! Please use /signup instead",
+  });
+};
+
+//Get User Data Middleware
+exports.getMe = (req, res, next) => {
+  req.params.id = req.user.id;
+  next();
+};
 
 //Update User Data
 exports.updateMe = catchAsync(async (req, res, next) => {
@@ -63,17 +76,3 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
 
   res.status(204).json({ status: "success", data: null });
 });
-
-//Delete user
-exports.deleteUser = factory.deleteOne(User);
-
-//Update user
-exports.updateUser = factory.updateOne(User);
-
-//Create user
-exports.createUser = (req, res) => {
-  res.status(500).json({
-    status: "error",
-    message: "This route is not defined! Please use /signup instead",
-  });
-};
