@@ -101,6 +101,7 @@ const tourSchema = new mongoose.Schema(
 // tourSchema.index({ price: 1 }); //Set index on price in an ascending order
 tourSchema.index({ price: 1, ratingsAverage: -1 }); //Set compound index on price in an ascending order & ratingsAverage in a descending order
 tourSchema.index({ slug: 1 });
+tourSchema.index({ startLocation: "2dsphere" });
 
 //////////VIRTUAL PROPERTIES
 tourSchema.virtual("durationWeeks").get(function () {
@@ -143,10 +144,10 @@ tourSchema.pre(/^find/, function (next) {
 });
 
 ////////AGGREGATION MIDDLEWARE: runs before aggregation happens
-tourSchema.pre("aggregate", function (next) {
-  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
-  next();
-});
+// tourSchema.pre("aggregate", function (next) {
+//   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+//   next();
+// });
 
 const Tour = mongoose.model("Tour", tourSchema); //Model name always start with uppercase
 
