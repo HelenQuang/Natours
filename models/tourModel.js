@@ -33,6 +33,7 @@ const tourSchema = new mongoose.Schema(
       default: 4.5,
       min: [1, "Rating must be above 1.0"],
       max: [5, "Rating must be below 5.0"],
+      set: (val) => Math.round(val * 10) / 10, //To round up the average
     },
     ratingsQuantity: { type: Number, default: 0 },
     price: { type: Number, required: [true, "A tour must have a price"] },
@@ -96,6 +97,11 @@ const tourSchema = new mongoose.Schema(
   { toJSON: { virtuals: true }, toObject: { virtuals: true } } //Whenever data outputs into JSON or object, virtuals will be shown
 );
 
+//////////SET UP PERSONAL INDEX FOR MONGODB
+// tourSchema.index({ price: 1 }); //Set index on price in an ascending order
+tourSchema.index({ price: 1, ratingsAverage: -1 }); //Set compound index on price in an ascending order & ratingsAverage in a descending order
+tourSchema.index({ slug: 1 });
+
 //////////VIRTUAL PROPERTIES
 tourSchema.virtual("durationWeeks").get(function () {
   //Have to use regular fn bc arrow fn can't use "this"
@@ -122,7 +128,7 @@ tourSchema.pre("save", function (next) {
 //   next();
 // });
 
-////////QUERY MIDDLEWARE: runs before .find()
+////////QUERY MIDDLEWARE: runs before .find() query
 tourSchema.pre(/^find/, function (next) {
   this.find({ secretTour: { $ne: true } });
   next();
