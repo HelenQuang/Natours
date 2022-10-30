@@ -1132,20 +1132,20 @@ body {
   padding: 2.5rem 3rem;
 }
 .card__sub-heading {
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   text-transform: uppercase;
   font-weight: 700;
   grid-column: 1 / -1;
 }
 .card__text {
   grid-column: 1 / -1;
-  font-size: 1.5rem;
+  font-size: 1.7rem;
   font-style: italic;
   margin-top: -1rem;
   margin-bottom: 0.75rem;
 }
 .card__data {
-  font-size: 1.3rem;
+  font-size: 1.5rem;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -1165,7 +1165,7 @@ body {
   background-color: #f7f7f7;
   padding: 2.5rem 3rem;
   border-top: 1px solid #f1f1f1;
-  font-size: 1.4rem;
+  font-size: 1.6rem;
   display: grid;
   grid-template-columns: auto 1fr;
   grid-column-gap: 1rem;
