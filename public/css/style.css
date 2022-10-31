@@ -446,7 +446,7 @@ body {
   margin-right: 5rem;
 }
 .description-box .description__text {
-  font-size: 1.7rem;
+  font-size: 1.9rem;
 }
 .description-box .description__text:not(:last-child) {
   margin-bottom: 2rem;
@@ -465,7 +465,7 @@ body {
   margin-bottom: 7rem;
 }
 .overview-box__detail {
-  font-size: 1.5rem;
+  font-size: 1.7rem;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -489,7 +489,7 @@ body {
   font-weight: 700;
   margin-right: 2.25rem;
   text-transform: uppercase;
-  font-size: 1.4rem;
+  font-size: 1.5rem;
 }
 .overview-box__text {
   text-transform: capitalize;
