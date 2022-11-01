@@ -19,5 +19,17 @@ exports.getTour = catchAsync(async (req, res) => {
 
   //2. Build template
   //3. Render template
-  res.status(200).render("tour", { title: "The Forest Hiker", tour });
+  res.status(200).render("tour", { title: `${tour.name} tour`, tour });
+});
+
+exports.getLoginForm = catchAsync(async (req, res) => {
+  res.status(200).render("login", {
+    title: "Log into your account",
+  });
+});
+
+exports.getSignupForm = catchAsync(async (req, res) => {
+  res.status(200).render("signup", {
+    title: "Sign up to new account",
+  });
 });
