@@ -71,6 +71,37 @@ exports.logIn = catchAsync(async (req, res, next) => {
   createAndSendToken(user, 200, res);
 });
 
+//IsLoggedIn middleware fn to check user is logged in => used in rendering templates => have no errors
+exports.isLoggedIn = async (req, res, next) => {
+  if (req.cookies.jwt) {
+    try {
+      //1. Verify token
+      const decoded = await promisify(jwt.verify)(
+        req.cookies.jwt,
+        process.env.JWT_SECRET
+      );
+
+      //2. Check if user still exists
+      const currentUser = await User.findById(decoded.id);
+      if (!currentUser) {
+        return next();
+      }
+
+      //4. Check if user changed password after JWT was issued
+      if (currentUser.changedPasswordAfter(decoded.iat)) {
+        return next();
+      }
+
+      //5. There is a logged in user
+      res.locals.user = currentUser; //Use res.locals to passing the variable to the pug template
+      return next();
+    } catch (err) {
+      return next();
+    }
+  }
+  next();
+};
+
 //Protect middleware fn to add to protect routes
 exports.protect = catchAsync(async (req, res, next) => {
   //1. Get token
