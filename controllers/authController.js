@@ -71,6 +71,15 @@ exports.logIn = catchAsync(async (req, res, next) => {
   createAndSendToken(user, 200, res);
 });
 
+//Overwrite jwt token in cookie browser with empty token to logout user
+exports.logOut = (req, res) => {
+  res.cookie("jwt", "loggedout", {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  });
+  res.status(200).json({ status: "success" });
+};
+
 //IsLoggedIn middleware fn to check user is logged in => used in rendering templates => have no errors
 exports.isLoggedIn = async (req, res, next) => {
   if (req.cookies.jwt) {
