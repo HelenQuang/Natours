@@ -1,4 +1,5 @@
 const express = require("express");
+
 const {
   getAllUsers,
   getSpecificUser,
@@ -8,6 +9,7 @@ const {
   getMe,
   updateMe,
   deleteMe,
+  uploadUserPhoto,
 } = require("./../controllers/userController");
 const {
   signUp,
@@ -32,7 +34,7 @@ router.use(protect); //All routers after this point will be protected
 
 router.route("/updateMyPassword").patch(updatePassword);
 router.route("/me").get(getMe, getSpecificUser);
-router.route("/updateMe").patch(updateMe);
+router.route("/updateMe").patch(uploadUserPhoto, updateMe);
 router.route("/deleteMe").delete(deleteMe);
 
 router.use(restrictTo("admin")); //All routers after this point will be restricted to admin
