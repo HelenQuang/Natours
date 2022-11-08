@@ -1,5 +1,7 @@
 const express = require("express");
 const {
+  uploadTourImgs,
+  resizeTourImgs,
   aliasTopTours,
   getAllTours,
   createNewTour,
@@ -35,7 +37,13 @@ router
 router
   .route("/:id")
   .get(getSpecificTour)
-  .patch(protect, restrictTo("admin", "lead-guide"), updateTour)
+  .patch(
+    protect,
+    restrictTo("admin", "lead-guide"),
+    uploadTourImgs,
+    resizeTourImgs,
+    updateTour
+  )
   .delete(protect, restrictTo("admin", "lead-guide"), deleteTour);
 
 ////////NESTED ROUTES
