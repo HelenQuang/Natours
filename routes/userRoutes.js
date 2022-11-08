@@ -10,6 +10,7 @@ const {
   updateMe,
   deleteMe,
   uploadUserPhoto,
+  resizeUserPhoto,
 } = require("./../controllers/userController");
 const {
   signUp,
@@ -34,7 +35,7 @@ router.use(protect); //All routers after this point will be protected
 
 router.route("/updateMyPassword").patch(updatePassword);
 router.route("/me").get(getMe, getSpecificUser);
-router.route("/updateMe").patch(uploadUserPhoto, updateMe);
+router.route("/updateMe").patch(uploadUserPhoto, resizeUserPhoto, updateMe);
 router.route("/deleteMe").delete(deleteMe);
 
 router.use(restrictTo("admin")); //All routers after this point will be restricted to admin

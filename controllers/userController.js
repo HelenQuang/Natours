@@ -1,4 +1,5 @@
 const multer = require("multer");
+const sharp = require("sharp");
 const User = require("../models/userModel");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
@@ -90,6 +91,11 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 
   //2. Filter out unwanted fields that are not allow to update(role, passwordResetToken,...)
   const filteredBody = filterObj(req.body, "name", "email");
+
+  //2.1 Add updated photo to current user
+  if (req.file) {
+    filteredBody.photo = req.file.filename;
+  }
 
   //3. Update user data
   const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
