@@ -7,12 +7,14 @@ const mongoSanitize = require("express-mongo-sanitize");
 const xss = require("xss-clean");
 const hpp = require("hpp");
 const cookieParser = require("cookie-parser");
+const compression = require("compression");
 
 const AppError = require("./utils/appError");
 const globalErrorHandler = require("./controllers/errorController");
 const tourRouter = require("./routes/tourRoutes");
 const userRouter = require("./routes/userRoutes");
 const reviewRouter = require("./routes/reviewRoutes");
+const bookingRouter = require("./routes/bookingRoutes");
 const viewRouter = require("./routes/viewRoutes");
 
 const app = express();
@@ -24,6 +26,9 @@ app.set("views", path.join(__dirname, "views"));
 // GLOBAL MIDDLEWARES: These middleware apply to all routes below
 //Serving static files
 app.use(express.static(path.join(__dirname, "public")));
+
+//Compress text response sent to client
+app.use(compression());
 
 //To set security headers
 app.use(helmet());
@@ -80,6 +85,7 @@ app.use("/", viewRouter);
 app.use("/api/v1/tours", tourRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/reviews", reviewRouter);
+app.use("/api/v1/bookings", bookingRouter);
 
 app.all("*", (req, res, next) => {
   //use all for all methods(get, post, delete,...)
