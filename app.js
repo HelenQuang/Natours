@@ -90,7 +90,7 @@ app.use("/api/v1/bookings", bookingRouter);
 app.all("*", (req, res, next) => {
   //use all for all methods(get, post, delete,...)
 
-  next(new AppError(404, `${req.originalUrl} cannot find in this server`)); //pass anything into next => is assumed as an error & skip all other middlewares & send that error to the global handling error
+  next(new AppError(`${req.originalUrl} cannot find in this server`, 404));
 });
 
 app.use(globalErrorHandler);
