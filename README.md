@@ -34,7 +34,7 @@
 admin@example.com (Admin)
 test1234
 
-monica@example.com (User)
+bao@example.com (User)
 test123456
 
 kevin@example.com (Lead-guide)
